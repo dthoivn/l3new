@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiểm tra giữa học kì I - Tin học 3</title>
+<style>
+:root{--blue:#2563eb;--ink:#172033;--muted:#5b6475;--line:#dbe3ef;--bg:#f3f7fc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:900px;margin:auto;padding:22px 16px 44px}
+header{background:linear-gradient(135deg,#1d4ed8,#60a5fa);color:#fff;padding:24px;border-radius:18px}
+h1{font-size:clamp(1.4rem,3vw,2rem);line-height:1.25;margin:0 0 8px}header p{margin:4px 0}.pill{display:inline-block;border:1px solid #ffffff66;border-radius:999px;padding:4px 10px;margin-top:10px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:16px;box-shadow:0 3px 12px #0f172a08}h2{font-size:1.15rem;margin:0 0 14px}
+.student-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px}label.field{display:block;font-weight:650}input[type=text]{display:block;width:100%;margin-top:6px;border:1px solid #b9c6d8;border-radius:10px;padding:11px 12px;font:inherit}
+.status{display:flex;justify-content:space-between;gap:12px;align-items:center}.time{font-weight:800;font-size:1.25rem;font-variant-numeric:tabular-nums}.question{border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0}.q-title{margin:0 0 12px;font-weight:750}.q-number{color:var(--blue)}.options{display:grid;gap:8px}.option{display:flex;gap:10px;align-items:flex-start;border:1px solid #d9e2ef;border-radius:11px;padding:10px 12px;cursor:pointer}.option:has(input:checked){background:#eff6ff;border-color:var(--blue)}.option input{margin-top:5px;accent-color:var(--blue)}button{border:0;border-radius:11px;padding:12px 17px;font:inherit;font-weight:750;cursor:pointer}.primary{background:var(--blue);color:white}.secondary{background:#e8eef8;color:#1e293b}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.hint{color:var(--muted);font-size:.92rem}.result{background:#eff6ff;border-radius:12px;padding:16px;margin-top:16px}.correct{color:#15803d}.wrong{color:#b91c1c}footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:22px}
+@media(max-width:620px){.student-grid{grid-template-columns:1fr}.panel{padding:15px}.status{align-items:flex-start;flex-direction:column}}
+@media print{body{background:#fff}.actions,#timerPanel,footer{display:none}.panel,.question{box-shadow:none;break-inside:avoid}header{background:#fff;color:#000;padding:0}}
+</style>
+</head>
+<body><div class="wrap">
+<header><h1>BÀI KIỂM TRA GIỮA HỌC KÌ I<br>TIN HỌC LỚP 3</h1>
+<p>Năm học 2026–2027</p><p>Bộ sách: Kết nối tri thức với cuộc sống</p>
+<span class="pill">Trắc nghiệm · 15 câu · 10 điểm · 35 phút</span></header>
+<section class="panel"><h2>Thông tin học sinh</h2><div class="student-grid">
+<label class="field">Họ và tên<input id="studentName" type="text" placeholder="Nhập họ và tên"></label>
+<label class="field">Lớp<input id="studentClass" type="text" placeholder="Ví dụ: 3A"></label></div>
+<p class="hint">Em hãy chọn một đáp án đúng nhất cho mỗi câu hỏi.</p></section>
+<section class="panel" id="timerPanel"><div class="status"><h2>Thời gian còn lại</h2><div class="time" id="timeText">35:00</div></div><p class="hint" id="progress">Đã trả lời 0/15 câu</p></section>
+<form class="panel" id="quizForm"><h2>Phần trắc nghiệm</h2><div id="questions"></div>
+<div class="actions"><button class="primary" type="submit" id="submitBtn">Nộp bài</button><button class="secondary" type="button" onclick="window.print()">In đề</button></div>
+<div id="result" class="result" hidden></div>
+<p class="hint">Mỗi câu đúng được tính điểm như nhau. Điểm được chấm tự động sau khi nộp bài.</p></form>
+<footer>Đề tham khảo được biên soạn theo các nội dung đầu học kì I của Tin học 3 – Kết nối tri thức với cuộc sống.</footer>
+</div>
+<script>
+const QUESTIONS = [
+{q:"Khi thấy đèn giao thông chuyển sang màu đỏ, em nên làm gì?",o:["Tiếp tục đi nhanh","Dừng lại","Bấm còi thật to"],a:1},
+{q:"Điều nào sau đây là thông tin dạng âm thanh?",o:["Tiếng trống trường","Bức ảnh phong cảnh","Dòng chữ trong sách"],a:0},
+{q:"Từ thông tin thu được, sau khi suy nghĩ, em có thể làm gì?",o:["Đưa ra quyết định","Tắt mắt và tai","Xóa mọi thông tin"],a:0},
+{q:"Bộ phận nào của con người giúp xử lí thông tin và đưa ra quyết định?",o:["Bàn chân","Bộ não","Khuỷu tay"],a:1},
+{q:"Khi nghe tiếng chuông báo giờ vào lớp, em hiểu rằng…",o:["Đã đến giờ vào lớp","Trời đang mưa","Máy tính bị hỏng"],a:0},
+{q:"Thiết bị nào sau đây là máy tính?",o:["Máy tính để bàn","Cái bút chì","Thước kẻ"],a:0},
+{q:"Máy tính có thể giúp em làm việc nào?",o:["Tự ăn cơm","Soạn thảo và học tập","Tự đi bộ đến trường"],a:1},
+{q:"Trước khi sử dụng máy tính, em nên…",o:["Ngồi đúng tư thế","Đưa tay ướt chạm thiết bị","Nhìn sát màn hình"],a:0},
+{q:"Khi làm việc với máy tính, mắt nên cách màn hình…",o:["Một khoảng cách phù hợp","Sát màn hình","Càng gần càng tốt"],a:0},
+{q:"Bộ phận nào dùng để nhập chữ và số vào máy tính?",o:["Màn hình","Bàn phím","Loa"],a:1},
+{q:"Phím dài nhất trên bàn phím thường là phím…",o:["Enter","Space (phím cách)","Esc"],a:1},
+{q:"Khi gõ bàn phím, em nên đặt tay như thế nào?",o:["Đặt tay thoải mái, đúng vị trí hướng dẫn","Đập mạnh các phím","Chỉ dùng một ngón tay cho mọi phím"],a:0},
+{q:"Thiết bị nào giúp em nhìn thấy chữ và hình ảnh máy tính hiển thị?",o:["Màn hình","Chuột","Bàn phím"],a:0},
+{q:"Muốn nghe âm thanh phát ra từ máy tính, em có thể dùng…",o:["Loa","Máy in","Bàn phím"],a:0},
+{q:"Nếu phát hiện dây điện hoặc máy tính có dấu hiệu bất thường, em nên…",o:["Tự tháo máy để xem","Báo cho người lớn hoặc giáo viên","Tiếp tục sử dụng bằng mọi cách"],a:1}
+];
+const form=document.getElementById('quizForm'), questionsEl=document.getElementById('questions');
+questionsEl.innerHTML=QUESTIONS.map((q,i)=>`<fieldset class="question" id="q${i}"><legend class="q-title"><span class="q-number">Câu ${i+1}.</span> ${q.q}</legend><div class="options">${q.o.map((v,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}"><span><b>${String.fromCharCode(65+j)}.</b> ${v}</span></label>`).join('')}</div></fieldset>`).join('');
+function updateProgress(){let n=QUESTIONS.filter((q,i)=>form.querySelector(`input[name="q${i}"]:checked`)).length;document.getElementById('progress').textContent=`Đã trả lời ${n}/${QUESTIONS.length} câu`;}
+form.addEventListener('change',updateProgress);
+let remaining=35*60, submitted=false;
+function tick(){if(submitted)return;let m=Math.floor(remaining/60),s=remaining%60;document.getElementById('timeText').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(remaining<=0){submitQuiz(true);return;}remaining--;}
+const timer=setInterval(tick,1000);
+function submitQuiz(auto=false){if(submitted)return;const name=document.getElementById('studentName').value.trim(),cl=document.getElementById('studentClass').value.trim();if(!auto&&(!name||!cl)){alert('Em hãy nhập họ tên và lớp trước khi nộp bài.');return;}if(!auto&&!confirm('Em chắc chắn muốn nộp bài?'))return;submitted=true;clearInterval(timer);let score=0,details=[];QUESTIONS.forEach((q,i)=>{const chosen=form.querySelector(`input[name="q${i}"]:checked`);const val=chosen?Number(chosen.value):-1;const ok=val===q.a;if(ok)score+=10/QUESTIONS.length;details.push({i,ok,val,q});});const result=document.getElementById('result');result.hidden=false;result.innerHTML=`<h2>Kết quả bài làm</h2><p><b>Học sinh:</b> ${escapeHtml(name||'Chưa nhập')} &nbsp; <b>Lớp:</b> ${escapeHtml(cl||'Chưa nhập')}</p><p><b>Điểm trắc nghiệm: ${score.toFixed(2).replace('.',',')}/10</b> · Đúng ${details.filter(x=>x.ok).length}/${QUESTIONS.length} câu</p><hr>`+details.map(x=>`<p class="${x.ok?'correct':'wrong'}"><b>Câu ${x.i+1}:</b> ${x.ok?'Đúng':'Chưa đúng'} — Đáp án: ${String.fromCharCode(65+x.q.a)}. ${x.q.o[x.q.a]}</p>`).join('');form.querySelectorAll('input').forEach(el=>el.disabled=true);document.getElementById('submitBtn').disabled=true;result.scrollIntoView({behavior:'smooth'});}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+form.addEventListener('submit',e=>{e.preventDefault();submitQuiz(false);});
+</script></body></html>
