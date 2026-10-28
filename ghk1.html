@@ -48,6 +48,17 @@ function shuffleArray(arr) {
   return clone;
 }
 
+function shuffleQuestionOptions(question) {
+  const optionItems = question.o.map((text, originalIndex) => ({ text, originalIndex }));
+  const shuffled = shuffleArray(optionItems);
+  const newCorrectIndex = shuffled.findIndex(item => item.originalIndex === question.a);
+  return {
+    ...question,
+    o: shuffled.map(item => item.text),
+    a: newCorrectIndex
+  };
+}
+
 const QUESTIONS = shuffleArray([
 {q:"Khi thấy đèn giao thông chuyển sang màu đỏ, em nên làm gì?",o:["Tiếp tục đi nhanh","Dừng lại","Bấm còi thật to"],a:1},
 {q:"Điều nào sau đây là thông tin dạng âm thanh?",o:["Tiếng trống trường","Bức ảnh phong cảnh","Dòng chữ trong sách"],a:0},
@@ -64,11 +75,18 @@ const QUESTIONS = shuffleArray([
 {q:"Thiết bị nào giúp em nhìn thấy chữ và hình ảnh máy tính hiển thị?",o:["Màn hình","Chuột","Bàn phím"],a:0},
 {q:"Muốn nghe âm thanh phát ra từ máy tính, em có thể dùng…",o:["Loa","Máy in","Bàn phím"],a:0},
 {q:"Nếu phát hiện dây điện hoặc máy tính có dấu hiệu bất thường, em nên…",o:["Tự tháo máy để xem","Báo cho người lớn hoặc giáo viên","Tiếp tục sử dụng vì đang cần"],a:1}
-]);
+].map(shuffleQuestionOptions));
+
 const form=document.getElementById('quizForm'), questionsEl=document.getElementById('questions');
 questionsEl.innerHTML=QUESTIONS.map((q,i)=>`<fieldset class="question" id="q${i}"><legend class="q-title"><span class="q-number">Câu ${i+1}.</span> ${q.q}</legend><div class="options">${q.o.map((opt,idx)=>`<label class="option"><input type="radio" name="q${i}" value="${idx}"><span>${String.fromCharCode(65+idx)}. ${opt}</span></label>`).join('')}</div></fieldset>`).join('');
-function updateProgress(){let n=QUESTIONS.filter((q,i)=>form.querySelector(`input[name="q${i}"]:checked`)).length;document.getElementById('progress').textContent=`Đã trả lời ${n}/${QUESTIONS.length} câu`;
-const percent=Math.round((n/QUESTIONS.length)*100);document.getElementById('progress').setAttribute('aria-label',`Đã trả lời ${n} trên ${QUESTIONS.length} câu`);if(percent>=80){document.getElementById('progress').style.color='var(--good)'}else if(percent>=40){document.getElementById('progress').style.color='var(--blue)'}else{document.getElementById('progress').style.color='var(--muted)'}}
+
+function updateProgress(){
+  let n=QUESTIONS.filter((q,i)=>form.querySelector(`input[name="q${i}"]:checked`)).length;
+  const progressEl=document.getElementById('progress');
+  progressEl.textContent=`Đã trả lời ${n}/${QUESTIONS.length} câu`;
+  const percent=Math.round((n/QUESTIONS.length)*100);
+  if(percent>=80){progressEl.style.color='var(--good)'}else if(percent>=40){progressEl.style.color='var(--blue)'}else{progressEl.style.color='var(--muted)'}
+}
 form.addEventListener('change',updateProgress);
 const DURATION_SECONDS=35*60;
 let remaining=DURATION_SECONDS, submitted=false;
